@@ -2,12 +2,9 @@ import Link from "next/link";
 
 export default function PostHeader({header}: {header: string})  {
   return (
-    <h2 className="text-2xl md:text-4xl font-bold tracking-tight md:tracking-tighter leading-tight mb-20 mt-8">
-      <Link href="/" className="hover:underline">
+    <h1 style={{marginBottom: "16px"}}>
         {header}
-      </Link>
-      .
-    </h2>
+    </h1>
   );
 };
 

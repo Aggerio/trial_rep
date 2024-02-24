@@ -14,13 +14,15 @@ const Header = () => {
             marginTop: "8px",
           }}
         >
-          <Image
-            src={`/logo.png`}
-            style={{ display: "block" }}
-            alt="Logo"
-            width="24"
-            height="40"
-          />
+          <Link href="/">
+            <Image
+              src={`/logo.png`}
+              style={{ display: "block" }}
+              alt="Logo"
+              width="24"
+              height="40"
+            />
+          </Link>
         </div>
         <ul
           style={{
@@ -28,10 +30,10 @@ const Header = () => {
             listStyle: "none",
             paddingLeft: "30%",
             marginTop: "16px",
-            paddingRight: "16px"
+            paddingRight: "16px",
           }}
         >
-          <li >
+          <li>
             <Link href="/notes">Notes</Link>
           </li>
           <li>
