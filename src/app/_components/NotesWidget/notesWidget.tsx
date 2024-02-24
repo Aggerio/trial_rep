@@ -18,7 +18,9 @@ export default function NotesWidget({
   return (
     <Container>
       <div className={styles.box}>
-        <PreviewMdFile title = {title} shortcontent={shortcontent} slug={slug} />
+        {/* <PreviewMdFile title = {title} shortcontent={shortcontent} slug={slug} /> */}
+        <PreviewMdFile slug={slug} />
+
       </div>
     </Container>
   );

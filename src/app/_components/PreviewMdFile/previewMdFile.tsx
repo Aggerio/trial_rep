@@ -1,18 +1,26 @@
 "use client";
 import Link from "next/link";
 import Container from "../Container/container";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Post } from "@/interfaces/post";
+import { getPostBySlug } from "@/lib/api";
+import markdownToHtml from "@/lib/markdownToHtml";
+
+
+type post = {
+  Pst: Post;
+};
 
 export default function PreviewMdFile({
-  title,
-  shortcontent,
+//   title,
+//   shortcontent,
   slug
 }: {
-  title: string;
-  shortcontent: string;
-  slug: string
+  slug: string;
 }) {
   const [hoverEnabled, setHover] = useState(false);
+  const [title, setTitle] = useState('');
+  const [shortcontent, setShortContent] = useState('');
 
   function setHoverEnabled(event: any) {
     setHover(true);
@@ -22,10 +30,28 @@ export default function PreviewMdFile({
     setHover(false);
     // console.log("Hovered cancelled");
   }
-  //TODO: fix the Link
+  useEffect(() => {
+    const fetchInfo = async () => {
+      let note: any = {};
+      try {
+        let data = await getPostBySlug(slug);
+        note = data;
+        // console.log(note);
+        setTitle(note['title']);
+        setShortContent(await markdownToHtml(note['content']));
+      } catch (error) {
+        console.log("Error: ", error);
+      }
+
+      return { note };
+    };
+
+    fetchInfo();
+  }, []);
+
   return (
     <Container>
-      <div >
+      <div>
         {hoverEnabled == true ? (
           <div
             style={{
@@ -40,7 +66,7 @@ export default function PreviewMdFile({
           >
             <strong>{title}</strong>
             <br />
-            <div dangerouslySetInnerHTML={{ __html:  shortcontent  }} />
+            <div dangerouslySetInnerHTML={{ __html: shortcontent }} />
           </div>
         ) : (
           <div></div>
@@ -60,4 +86,3 @@ export default function PreviewMdFile({
     </Container>
   );
 }
-

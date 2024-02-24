@@ -35,7 +35,7 @@ export async function getPostSlugs() {
         file = file.replaceAll(' ', '%20');
         slugs.push(file);
     })
-    console.log("All slugs: ", slugs);
+    // console.log("All slugs: ", slugs);
 
   return slugs;
 }
