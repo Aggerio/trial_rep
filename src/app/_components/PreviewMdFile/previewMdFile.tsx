@@ -7,17 +7,13 @@ import { getPostBySlug } from "@/lib/api";
 import markdownToHtml from "@/lib/markdownToHtml";
 
 
-type post = {
-  Pst: Post;
-};
 
 export default function PreviewMdFile({
-//   title,
-//   shortcontent,
   slug
 }: {
   slug: string;
 }) {
+  // console.log(slug);
   const [hoverEnabled, setHover] = useState(false);
   const [title, setTitle] = useState('');
   const [shortcontent, setShortContent] = useState('');
@@ -38,7 +34,13 @@ export default function PreviewMdFile({
         note = data;
         // console.log(note);
         setTitle(note['title']);
-        setShortContent(await markdownToHtml(note['content']));
+        let temp_content= await markdownToHtml(note['content']); 
+
+        const regex = /\[\[\s*([^[\]]*?)\s*\]\]/g;;
+        temp_content = temp_content.replace(regex, '$1 ');
+
+
+        setShortContent(temp_content);
       } catch (error) {
         console.log("Error: ", error);
       }

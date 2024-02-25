@@ -13,78 +13,80 @@ type notesList = {
 };
 
 export default function Notes() {
-  const [searchTerm, setSearch] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [notesList, setNotesList] = useState<notesList[] | null>();
+  const [filteredNotes, setFilteredNotes] = useState<notesList[] | null>(null);
 
   useEffect(() => {
     const fetchAllPosts = async () => {
-      let allNotes: any = {};
       try {
-        let data = await getAllPosts();
-        allNotes = data;
-        for(let i = 0; i < allNotes.length; ++i)
-        {
-          allNotes[i]['content'] = await markdownToHtml(allNotes[i]['content']);
-        }
-        setNotesList(allNotes);
+        const data = await getAllPosts();
+        const modifiedNotes = await Promise.all(
+          data.map(async (note: any) => {
+            note.content = await markdownToHtml(note.content);
+            return note;
+          })
+        );
+        setNotesList(modifiedNotes);
+        setFilteredNotes(modifiedNotes); // Initially set filtered notes to all notes
       } catch (error) {
         console.log("Error: ", error);
       }
-
-      return { allNotes };
     };
 
     fetchAllPosts();
   }, []);
 
-  const handleChange = (e: any) => {
-    setSearch(e.target.value);
-  };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = e.target.value;
+    setSearchTerm(searchTerm);
 
-  if (searchTerm.length > 0) {
-    setNotesList(
-      notesList &&
-        notesList.filter((note: any) => {
-          return note.content.match(searchTerm);
-        })
-    );
-  }
+    if (notesList) {
+      if (searchTerm.trim() === "") {
+        setFilteredNotes(notesList); // If search term is empty, display all notes
+      } else {
+        const filtered = notesList?.filter((note: any) =>
+          note.title.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredNotes(filtered);
+      }
+    }
+  };
 
   return (
     <div>
       <Header />
       <main>
         <Container>
-          <h2> Working Notes</h2>
+          <h2>Working Notes</h2>
           <br />
           <br />
           <p>
-            Here's a compilation of books I've read. The ones marked with star
-            are must reads, and those marked with two are re reads. Check my
-            Antilibrary for the bigger list :)
+            Here's a compilation of books I've read. The ones marked with a star
+            are must-reads, and those marked with two stars are re-reads. Check
+            my Antilibrary for the bigger list :)
           </p>
 
           <div className={styles.search_container}>
             <input
               type="text"
-              placeholder="🔍 Search Notes"
+              placeholder="Search Notes"
               className={styles.search_input}
-              // onChange={handleChange}
+              onChange={handleChange}
             />
           </div>
-          {notesList &&
-            notesList.map((note: any, index: any) => {
-              return (
-                <NotesWidget key={index}
-                  title={note["title"]}
-                  shortcontent={note["content"]}
-                  slug = {note['slug']}
-                />
-              );
-            })}
-
+          {filteredNotes &&
+            filteredNotes.map((note: any, index: any) => (
+              <NotesWidget
+                key={index}
+                title={note.title}
+                shortcontent={note.content}
+                slug={note.slug}
+              />
+            ))}
         </Container>
       </main>
     </div>
   );
 }
+
